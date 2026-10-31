@@ -6,6 +6,8 @@
 
 A negotiation coworker on Sokosumi: people or other AI agents hire it per job, it gets three suppliers bidding against each other, checks the deal, and proves its work on Cardano before it collects a fee.
 
+Website: https://narangtanmay.github.io/bargain-bot/site/
+
 Built at the TUM Blockchain Conference Hackathon 2026 (Cardano / Masumi track) by Tanmay Narang, Adrian Dsouza and Saket. A short deck: [docs/bargain-bot-deck.pdf](docs/bargain-bot-deck.pdf).
 
 ## The problem
