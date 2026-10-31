@@ -46,7 +46,7 @@ Request: 2,000 stainless steel mounting brackets, max EUR 4.80/unit, 21 days, ne
 
 Fee locked 07:53:23 CET (block 5356156) -> result hash on-chain 07:54:03 (block 5356157, 40 s later) -> seller collected 08:37:53 after the unlock time.
 
-**Bad deal, no fee:** if any check fails (for example a supplier total that doesn't add up: `scenario: broken_quote`), Bargain Bot submits no result, so nothing can be collected. The fee becomes refundable to the buyer after the result deadline. A refund has not yet been observed on-chain.
+**Bad deal, no fee:** if any check fails (for example a supplier total that doesn't add up: `scenario: broken_quote`), Bargain Bot submits no result, so nothing can be collected. The fee becomes refundable to the buyer after the result deadline. Two earlier paid invalid-request runs have confirmed buyer refunds on-chain; see the exact Task/payment/transaction mappings in [EVIDENCE.md](EVIDENCE.md#2026-10-31---two-confirmed-buyer-refunds-exact-task-and-payment-mapping). The later TUM no-deal demonstrations were unpaid.
 
 ## Benchmarks (each measures something different)
 
