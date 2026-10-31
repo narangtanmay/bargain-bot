@@ -72,11 +72,24 @@ def transcript(request, threads, order, names, winner):
     return lines
 
 
-def negotiate(request_text, seed=1, scenario="normal", llm=None, paid=False, tactician=False):
+def make_suppliers(request, seed, scenario, model="simulated"):
+    """The run's suppliers, rebuilt identically from the seed (the consistency check uses this to read floors)."""
+    rng = random.Random(seed)
+    if model == "negmas":  # dev-only: NegMAS strategies play the suppliers (negmas_suppliers.py)
+        from .negmas_suppliers import build
+        return build(request, rng, scenario, seed, PERSONAS)
+    quotes = request.get("supplier_quotes") or [None] * len(PERSONAS)
+    return {p.sid: Supplier(p, request, rng, scenario, seed, q) for p, q in zip(PERSONAS, quotes)}
+
+
+def negotiate(request_text, seed=1, scenario="normal", llm=None, paid=False, tactician=False,
+              suppliers="simulated", buyer="ported"):
     """`llm` is None with the LLM flag off (the run is then the same as on `negotiation-coworker`), else an
     `llm.Client` for the free-text suppliers a `supplier_channel` line asks for. `paid` refuses free-text suppliers.
     `tactician` (needs `llm`) lets the model pick among code-priced offers (`tactician.py`)."""
     request, errors = parse_request(request_text)
+    if suppliers == "negmas" and (request.get("supplier_quotes") or any("supplier_quote" in e for e in errors)):
+        errors.append("supplier_quote lines cannot be combined with --suppliers negmas")
     if scenario == "above_cap" and (request.get("supplier_quotes") or any("supplier_quote" in e for e in errors)):
         errors.append("scenario above_cap cannot be combined with supplier_quote lines")
     channel = "protocol"
@@ -106,15 +119,18 @@ def negotiate(request_text, seed=1, scenario="normal", llm=None, paid=False, tac
         result["summary_markdown"] = summary_markdown(result)
         return result
 
-    rng = random.Random(seed)
-    quotes = request.get("supplier_quotes") or [None] * len(PERSONAS)
-    suppliers = {p.sid: Supplier(p, request, rng, scenario, seed, q) for p, q in zip(PERSONAS, quotes)}
+    model = suppliers
+    suppliers = make_suppliers(request, seed, scenario, model)
     names = {sid: s.name for sid, s in suppliers.items()}
     free = {p.sid for p in PERSONAS} if channel == "free_text" else {PERSONAS[0].sid} if channel == "mixed" else set()
     seats = {sid: FreeTextAdapter(sid, names[sid], ProseSupplier(s, seed), llm, request) if sid in free else s
              for sid, s in suppliers.items()}
-    buyer = Tactician(Buyer(request), llm) if tactician and llm is not None else Buyer(request)
-    out = table.run(buyer, seats, request, time_limit_s=TIME_LIMIT_S)
+    if buyer == "baseline":  # comparison only: the first engine's policy (baseline_buyer.py)
+        from .baseline_buyer import BaselineBuyer
+        agent = BaselineBuyer(request)
+    else:
+        agent = Tactician(Buyer(request), llm) if tactician and llm is not None else Buyer(request)
+    out = table.run(agent, seats, request, time_limit_s=TIME_LIMIT_S)
     threads, qty = out["threads"], request["quantity"]
 
     openings = {sid: pr.opening(events)[1] for sid, events in threads.items()}
@@ -156,8 +172,11 @@ def negotiate(request_text, seed=1, scenario="normal", llm=None, paid=False, tac
     if llm is not None:
         result["supplier_channels"] = {names[sid]: "free_text" if sid in free else "protocol" for sid in suppliers}
         result["llm"] = llm.usage()
-        if isinstance(buyer, Tactician):
+        if isinstance(agent, Tactician):
             result["tactician"] = [{"supplier": names[e["supplier_id"]], **{k: v for k, v in e.items() if k != "supplier_id"}}
-                                   for e in buyer.log]
+                                   for e in agent.log]
+    if model == "negmas":
+        from .negmas_suppliers import MODEL
+        result["supplier_model"] = MODEL
     result["summary_markdown"] = summary_markdown(result, candidate)
     return result

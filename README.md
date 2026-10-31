@@ -144,6 +144,29 @@ Malformed JSON, arrays, invalid fields, expired deadlines, and missing required 
 
 Self-simulation consistency check, not a benchmark: this team wrote both the buyer and the simulated suppliers. On `negotiator/examples/request.txt`, seeds 0-199 gave 200 deals, with a mean saving of 11.3% against the winner's opening quote (minimum 8.7%) and no rule violations. `above_cap` and `broken_quote` gave `no_deal` on all 200 seeds each. A run takes a few milliseconds. Rerun it with `cd negotiator && python3 -m negotiator.consistency_check`.
 How the buyer does against independent sellers or human suppliers has not been measured.
+
+### NegMAS check (branch `negmas-suppliers-v2`, dev only)
+
+`--suppliers negmas` lets three stock [NegMAS](https://github.com/yasserfarouk/negmas) seller strategies play the suppliers: Boulware (concedes late), Conceder (concedes early) and naive tit-for-tat. This team did not write those strategies, but we still choose each seller's reservation price and price range, so the label is "independent strategies, our reservation prices". It is not a benchmark against independent sellers.
+
+```sh
+cd negotiator && pip install -r requirements-dev.txt   # negmas==0.16.0, dev only, never in requirements.txt
+python3 -m negotiator.consistency_check --suppliers negmas --seeds 100
+python3 -m negotiator.consistency_check --suppliers negmas --seeds 100 --buyer baseline   # first engine's policy
+```
+
+Measured on `negotiator/examples/request.txt`, seeds 0-99:
+
+| Buyer | Suppliers | Deals | Mean saving vs winner's opening | Margin captured (opening to hidden reservation price) |
+|---|---|---|---|---|
+| ported ProcuDeal policy | ours (simulated) | 100/100 | 11.4% (8.7-17.9%) | 65.3% (55.0-87.2%) |
+| first engine's policy (baseline) | ours (simulated) | 89/100 | 6.8% (4.8-9.4%) | 40.8% (36.8-44.1%) |
+| ported ProcuDeal policy | NegMAS strategies | 100/100 | 7.1% (3.4-8.1%) | 80.9% (16.8-86.8%) |
+| first engine's policy (baseline) | NegMAS strategies | 100/100 | 4.5% (2.5-5.2%) | 51.6% (27.9-53.8%) |
+
+The baseline is the policy of this project's first engine (`a538ade`): three counter rounds, the leader asked for 5% off, the others for one cent below the leader, then take the cheapest acceptable sheet. It is restated as a protocol buyer (`baseline_buyer.py`) so it runs on the same table, suppliers and accept gate; it is not the old code byte for byte, and the old engine's own supplier model is gone. Rerun with `--buyer baseline`. The baseline's 11 missed deals against our suppliers are runs where its fixed rounds ended before any supplier reached an acceptable price.
+
+`above_cap` and `broken_quote` gave `no_deal` on 100 of 100 seeds with both, and no run broke a rule. The Conceder seller won 97 of 100 NegMAS runs. NegMAS is AGPL-3.0-or-later: keep it a dev-only test dependency and out of the worker and agent API, which run as network services.
 With one supplier, only the ladder and the caps apply. The buyer is strongest with two or more bidders.
 
 ### Scenarios

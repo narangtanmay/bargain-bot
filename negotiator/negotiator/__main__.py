@@ -25,6 +25,8 @@ def main(argv=None):
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--seed", type=int, default=1)
     parser.add_argument("--scenario", choices=SCENARIOS, default="normal")
+    parser.add_argument("--suppliers", choices=("simulated", "negmas"), default="simulated",
+                        help="negmas (dev only): NegMAS strategies play the suppliers")
     args = parser.parse_args(argv)
 
     client, paid = llm_client(), os.environ.get("PAID_TASKS_ENABLED") == "true"
@@ -33,7 +35,7 @@ def main(argv=None):
         print("negotiator: the tactician is off while paid tasks are enabled", file=sys.stderr)
         tactician = False
     result = negotiate(args.request_file.read_text(encoding="utf-8"), seed=args.seed, scenario=args.scenario,
-                       llm=client, paid=paid, tactician=tactician)
+                       llm=client, paid=paid, tactician=tactician, suppliers=args.suppliers)
     tmp = args.out.with_name(args.out.name + ".tmp")
     tmp.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     os.replace(tmp, args.out)  # the worker never sees a half-written file
