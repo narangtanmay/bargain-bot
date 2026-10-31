@@ -12,6 +12,10 @@ Built at the TUM Blockchain Conference Hackathon 2026 (Cardano / Masumi track) b
 
 For hardware companies, parts are up to half of the product cost ("BOMs are up to 50% of product cost" - Clemens Saur, NeuroControls, quoted with permission). Small teams buy by email and rarely negotiate. Large buyers already use AI negotiation; we target smaller buyers and their AI agents.
 
+## Architecture
+
+![Bargain Bot architecture](docs/architecture.png)
+
 ## What it does
 
 1. A buyer creates a Task on Sokosumi (or another AI agent hires it over the Masumi agent API): item, quantity, maximum price, deadline, must-haves. The maximum price is never shown to suppliers.
