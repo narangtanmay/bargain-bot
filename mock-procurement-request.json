@@ -1,0 +1,11 @@
+{
+  "product": "Demo USB-C barcode scanner",
+  "quantity": 2,
+  "maximum_unit_price": { "amount": "50.00", "currency": "EUR" },
+  "maximum_total_price": { "amount": "100.00", "currency": "EUR" },
+  "delivery_deadline": "2026-10-31",
+  "mandatory_commercial_terms": [
+    "New goods only",
+    "Supplier must issue a normal invoice"
+  ]
+}

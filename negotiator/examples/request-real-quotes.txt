@@ -1,0 +1,7 @@
+item: club hoodie
+quantity: 50
+max_unit_price_eur: 30
+delivery_days: 21
+supplier_quote: Print Shop Nord = 34.90
+supplier_quote: Merch Hub = 33.50
+supplier_quote: Stitch & Co = 36.00

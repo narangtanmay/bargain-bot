@@ -1,0 +1,131 @@
+PROVIDED_DISCLAIMER = (
+    "_Opening prices came from the buyer. Suppliers' hidden price floors, counter-offers, delivery and payment terms "
+    "are simulated by deterministic code; no LLM sets or reads prices._"
+)
+DISCLAIMER = (
+    "_Suppliers in this run are simulated demo agents with hidden price floors. "
+    "All prices come from deterministic code; no LLM sets or reads prices._"
+)
+
+
+FREE_TEXT_NOTE = (
+    "{names} answered in free text. A language model read their messages and rephrased the buyer's price offers to "
+    "them; it set no price and made no check. Code checked every figure it read against the supplier's own words, and "
+    "the buyer's code set every price. Free-text suppliers cannot sign, so their identity is not verified."
+)
+TACTICIAN_NOTE = (
+    "A language model (the tactician) picked some of the buyer's offers from a short list of options that code had "
+    "priced. It wrote no number; an invalid or late answer kept the engine's own offer. Code still enforced the cap, "
+    "the accept gate and every check."
+)
+NO_LLM = "no LLM sets or reads prices"
+LLM_READ = "an LLM read the free-text suppliers' messages but set no price"
+LLM_CHOSE = "an LLM chose among code-priced offers but set no price"
+
+
+PROVIDED_NOTE = "Opening prices are real quotes supplied by the buyer; the negotiation rounds, delivery and payment terms are simulated."
+
+
+def summary_markdown(result, candidate=None):
+    request = result["request"]
+    lines = [f"# Purchase negotiation: {request['item'] or 'unknown item'}", ""]
+    provided = result.get("opening_prices_source") == "provided"
+    if provided:
+        lines += [PROVIDED_NOTE, ""]
+    free = [name for name, channel in (result.get("supplier_channels") or {}).items() if channel == "free_text"]
+
+    if result["status"] == "invalid_request":
+        lines += ["**Outcome:** invalid request. No negotiation was run.", ""]
+        lines += [f"- {e}" for e in result["errors"]]
+        lines += ["", DISCLAIMER]
+        return "\n".join(lines)
+
+    qty, cap = request["quantity"], request["max_unit_price_eur"]
+    quote = result["quote"]
+    failed = [c["name"] for c in result["checks"] if not c["passed"]]
+    if quote:
+        head = "**Outcome (simulated negotiation):** simulated deal" if provided else "**Outcome:** deal"
+        lines.append(f"{head} with {quote['supplier']} at EUR {quote['unit_price_eur']:.2f} per unit "
+                     f"(cap EUR {cap:.2f}).")
+    elif candidate:
+        lines.append(f"**Outcome:** no deal. Failed checks on the best offer: {', '.join(failed)}. "
+                     "No order was placed and no payment should be released.")
+    else:
+        lines.append("**Outcome:** no deal. No supplier returned a usable offer. "
+                     "No order was placed and no payment should be released.")
+    lines.append("")
+
+    shown = quote or candidate
+    if shown:
+        label = ("Simulated agreed terms" if provided else "Agreed terms") if quote else f"Best offer considered ({shown['supplier']})"
+        lines += [
+            f"## {label}",
+            f"- Supplier: {shown['supplier']}",
+            f"- Unit price: EUR {shown['unit_price_eur']:.2f}",
+            f"- Quantity: {shown['quantity']} (requested {qty})",
+            f"- Total: EUR {shown['total_eur']:.2f}",
+            f"- Delivery: {shown['delivery_days']} days (deadline {request['delivery_days']} days)",
+            f"- Payment terms: net {shown['payment_terms_days']}",
+        ]
+        if provided:
+            lines.append("- Delivery and payment terms above are simulated, not offered by the company.")
+        if shown.get("confirmation"):
+            tag = "Quote ID (simulated confirmation)" if provided else "Quote ID"
+            lines.append(f"- {tag}: {shown['confirmation']['quote_id']}")
+        lines.append("")
+
+        opening = result["opening_best_unit_price_eur"]
+        lines += ["## Price", f"- Best opening offer: EUR {opening:.2f} per unit (EUR {opening * qty:.2f} total)",
+                  f"- Final offer: EUR {shown['unit_price_eur']:.2f} per unit"]
+    if quote:
+        winner_opening = result["winner_opening_unit_price_eur"]
+        lines.append(f"- {quote['supplier']}'s opening quote: EUR {winner_opening:.2f} per unit")
+        if provided:
+            lines.append(f"- Savings versus {quote['supplier']}'s real opening quote, at a simulated final price: "
+                         f"EUR {result['savings_eur']:.2f}")
+        else:
+            lines.append(f"- Savings vs {quote['supplier']}'s opening quote: EUR {result['savings_eur']:.2f}")
+    lines += ["", "## Checks"]
+    lines += [f"- [{'PASS' if c['passed'] else 'FAIL'}] {c['name']}: {c['detail']}" for c in result["checks"]]
+    if not result["checks"]:
+        lines.append("- No quote checks were run because no supplier returned a usable offer.")
+    if provided:
+        lines.append("- Note: the signature checks use demo keys generated by this negotiator. The named companies "
+                     "did not sign or confirm anything.")
+    lines.append("")
+    return "\n".join(lines + _tail(result, provided, free))
+
+
+def _tail(result, provided, free):
+    """The negotiation log, the LLM adapter section in free-text runs, and the disclaimer."""
+    lines = ["## Negotiation log (simulated after the opening quotes)" if provided else "## Negotiation log"]
+    for m in result["transcript"]:
+        who = f"Buyer -> {m['supplier']}" if m["from"] == "buyer" else m["supplier"]
+        lines.append(f"- R{m['round']} {who}: {m['text']}")
+    if free:
+        usage = result["llm"]
+        lines += ["", "## LLM adapter", FREE_TEXT_NOTE.format(names=", ".join(free)),
+                  f"- Model: {usage['model']}; {usage['calls']} calls ({usage['failures']} failed; {usage.get('budget_skips', 0)} budget skips), "
+                  f"{usage['input_tokens']} input and {usage['output_tokens']} output tokens "
+                  f"({usage['reasoning_tokens']} reasoning), {usage['seconds']:.2f} s"]
+        unread = sum(1 for m in result["transcript"] if m.get("read_error"))
+        if unread:
+            lines.append(f"- {unread} supplier message(s) could not be read and counted as no bid.")
+    picks = result.get("tactician")
+    if picks:
+        chosen = sum(1 for p in picks if p["chosen"] != "E0")
+        fell_back = sum(1 for p in picks if p["fallback"])
+        lines += ["", "## Tactician", TACTICIAN_NOTE,
+                  f"- {len(picks)} offers put to the model: {chosen} changed from the engine's offer, "
+                  f"{len(picks) - chosen - fell_back} kept it, {fell_back} fell back to it (no valid answer)."]
+        if not free:
+            usage = result["llm"]
+            lines.append(f"- Model: {usage['model']}; {usage['calls']} calls ({usage['failures']} failed; {usage.get('budget_skips', 0)} budget skips), "
+                         f"{usage['input_tokens']} input and {usage['output_tokens']} output tokens "
+                         f"({usage['reasoning_tokens']} reasoning), "
+                         f"{usage['seconds']:.2f} s")
+    disclaimer = PROVIDED_DISCLAIMER if provided else DISCLAIMER
+    if free or picks:
+        disclaimer = disclaimer.replace(NO_LLM, " and ".join(t for t, on in ((LLM_READ, free), (LLM_CHOSE, picks)) if on))
+    lines += ["", disclaimer]
+    return lines

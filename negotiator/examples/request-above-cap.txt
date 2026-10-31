@@ -1,0 +1,7 @@
+item: stainless steel mounting bracket
+quantity: 2000
+max_unit_price_eur: 4.80
+delivery_days: 21
+must_have: delivery within deadline
+must_have: payment terms net 30
+scenario: above_cap
