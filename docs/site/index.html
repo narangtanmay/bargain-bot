@@ -1,159 +1,312 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bargain Bot</title>
+<meta name="description" content="Bargain Bot gets your suppliers bidding and only gets paid on Cardano when the deal holds up.">
+<meta property="og:title" content="Bargain Bot">
+<meta property="og:description" content="Bargain Bot gets your suppliers bidding and only gets paid on Cardano when the deal holds up.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
 <style>
-:root{--accent:#0033AD;--canvas:#fbfcfd;--surface:#fff;--ink:#28253b;--ink2:#554e7b;--slate:#70707d;--lav:#edecfb;--line:rgba(112,115,147,.18)}
-*{box-sizing:border-box;margin:0}
-html,body{height:100%;background:#e9e9f0;overflow:hidden}
-body{font-family:"Inter Tight",system-ui,sans-serif;font-weight:300;color:var(--ink);display:grid;place-items:center}
-.slide{display:none;width:min(100vw,177.7778vh);aspect-ratio:16/9;container-type:size;background:var(--canvas);position:relative;overflow:hidden;padding:7cqw 8cqw}
-.slide.on{display:flex;flex-direction:column;justify-content:center}
-.eyebrow{font-weight:500;font-size:1.4cqw;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:2.4cqw}
-h1,h2,.big{font-weight:300;letter-spacing:-.02em;line-height:1.08}
-h1{font-size:8.2cqw}
-h2{font-size:5.4cqw}
-.sub{font-size:3cqw;color:var(--ink2);line-height:1.3;max-width:72cqw;margin-top:2.6cqw}
-.small{font-size:1.5cqw;color:var(--slate);letter-spacing:.02em}
-.acc{color:var(--accent)}
-.mark{position:absolute;left:8cqw;bottom:5cqw;display:flex;align-items:center;gap:1.2cqw;font-size:1.8cqw;color:var(--slate)}
-.mark img{height:3.4cqw}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:1.6cqw;padding:2.6cqw;box-shadow:0 .2cqw 1.2cqw rgba(40,37,59,.05)}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:2cqw;margin-top:4cqw}
-.cards .n{font-size:5cqw;color:var(--accent);line-height:1;margin-bottom:1.6cqw}
-.cards h3{font-weight:400;font-size:2.8cqw;margin-bottom:1cqw}
-.cards p{font-size:2.3cqw;color:var(--ink2);line-height:1.35}
-.stat{font-size:15cqw;font-weight:300;letter-spacing:-.04em;color:var(--accent);line-height:1}
-.quote{font-size:3.8cqw;line-height:1.3;font-weight:300;max-width:76cqw}
-.who{margin-top:2.6cqw;font-size:2.4cqw;font-weight:500}
-.en{margin-top:2cqw;font-size:2.2cqw;color:var(--slate);max-width:70cqw;line-height:1.35}
-.qm{font-family:Georgia,serif;font-size:12cqw;line-height:.6;color:var(--accent);height:5cqw}
-.tag{position:absolute;top:4cqw;right:5cqw;background:var(--lav);color:var(--ink);border-radius:9cqw;padding:.8cqw 1.8cqw;font-size:2cqw;font-weight:500}
-.run{display:flex;align-items:center;gap:3cqw;margin-top:3.2cqw}
-.offers{display:flex;flex-direction:column;gap:1.2cqw}
-.offer{background:var(--surface);border:1px solid var(--line);border-radius:1.2cqw;padding:1.6cqw 2.6cqw;font-size:3.2cqw;display:flex;justify-content:space-between;gap:5cqw;min-width:22cqw}
-.offer span:first-child{color:var(--slate)}
-.arrow{font-size:4cqw;color:var(--slate)}
-.final{background:var(--lav);border-radius:2cqw;padding:2cqw 3.6cqw}
-.final .stat{font-size:15cqw}
-.final p{font-size:2.4cqw;color:var(--ink2)}
-.pills{display:flex;gap:1.4cqw;margin-top:2cqw}
-.pill{background:rgba(82,102,235,.1);background:rgba(0,51,173,.08);border-radius:9cqw;padding:.9cqw 2cqw;font-size:2.2cqw;font-weight:400}
-.tx small{font-size:.6em;color:var(--slate);margin-left:1cqw}
-.src{display:flex;flex-direction:column;gap:1cqw;margin-top:2.6cqw}.src div{display:grid;grid-template-columns:34cqw 1fr 20cqw;gap:2cqw;align-items:center;background:#fff;border:1px solid var(--line);border-radius:1.2cqw;padding:1.2cqw 2cqw;font-size:1.8cqw;color:var(--ink2)}.src b{font-weight:500;color:var(--ink)}.src i{font-style:normal;color:var(--accent);text-align:right}
-.tx{display:flex;flex-direction:column;gap:1.4cqw;margin-top:3.6cqw}
-.row{display:flex;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:1.2cqw;padding:1.6cqw 2.4cqw;text-decoration:none;color:var(--ink);font-size:3cqw}
-.row code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:2cqw;color:var(--accent)}
-.next{display:flex;flex-direction:column;gap:1.6cqw;margin-top:3.4cqw}
-.next div{font-size:3.4cqw;padding-bottom:1.6cqw;border-bottom:1px solid var(--line);display:flex;gap:2cqw}
-.next b{color:var(--accent);font-weight:300;width:2.6cqw;flex:none}
-.foot{position:absolute;left:8cqw;bottom:5cqw;font-size:2cqw;color:var(--slate)}
-.pf{display:flex;gap:2cqw;margin-top:3cqw;max-width:84cqw}.pf>div{flex:1;background:#fff;border:1px solid var(--line);border-radius:1.6cqw;padding:2cqw 2.4cqw;font-size:2.1cqw;color:var(--ink2);line-height:1.35}.pf b{display:block;font-size:2.6cqw;font-weight:500;margin-bottom:.8cqw}.pf .ok b{color:var(--accent)}.pf .no b{color:#b42318}
-#ctr{position:fixed;right:1.2vw;bottom:.8vw;font-size:max(12px,1vw);color:var(--slate);font-family:"JetBrains Mono",monospace}
-@page{size:13.333in 7.5in;margin:0}
-@media all{html,body{overflow:visible;height:auto;background:none;display:block}
-.slide{display:flex!important;flex-direction:column;justify-content:center;width:13.333in;height:7.5in;page-break-after:always;break-after:page}#ctr{display:none}}
-</style></head><body><div style="position:sticky;top:0;z-index:9;background:#fbfcfd;border-bottom:1px solid #e3e3ea;padding:10px 16px;font:15px Inter Tight,sans-serif;display:flex;gap:18px;flex-wrap:wrap"><b style="color:#0033AD">Bargain Bot</b><a href="https://github.com/narangtanmay/bargain-bot">GitHub + README</a><a href="architecture.png">Architecture</a><a href="https://preprod.cardanoscan.io/transaction/9ae47b91ac40499c864276bf6074f5fdfff1baa9ba613377d0757a725571f6a9">Paid run on Cardano Preprod</a></div>
+/* Layout: product landing page in the pitch deck's palette and type. Sticky nav, split hero with the deal card, proof band, alternating sections, closing CTA. Light only, by choice, to match the deck. */
+:root {
+  --bg: #F9FBFB;
+  --card: #FFFFFF;
+  --ink: #262536;
+  --muted: #6B6A7D;
+  --faint: #9A99A8;
+  --line: #E8EAEE;
+  --blue: #0033AD;
+  --blue-hover: #00288A;
+  --panel: #EBEAF9;
+  --chip: #D9DBF4;
+  --bad: #B3261E;
+  --f: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 300 17px/1.6 var(--f); -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.gutter { padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1120px; margin: 0 auto; }
+a { color: var(--blue); text-underline-offset: 3px; }
+a:focus-visible, .btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 8px; }
+h1, h2, h3, p { margin: 0; }
+h1, h2 { font-weight: 300; letter-spacing: -0.03em; text-wrap: balance; }
+h3 { font-weight: 400; font-size: 1.15rem; line-height: 1.3; }
+.eyebrow { font: 600 0.7rem/1.3 var(--f); letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue); }
+.muted { color: var(--muted); }
 
-<section class="slide">
-<div class="eyebrow">TUM Blockchain Hackathon 2026 · Cardano / Masumi track</div>
-<h1>Bargain Bot</h1>
-<p class="sub">Gets your suppliers bidding. Only gets paid when the deal holds up.</p>
-<div class="mark"><span>Built on</span><img src="cardano-horizontal-blue.svg" alt="Cardano"></div>
-</section>
+/* nav */
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: rgba(249, 251, 251, 0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 20px; height: 64px; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 500; font-size: 1.05rem; color: var(--ink); text-decoration: none; letter-spacing: -0.01em; }
+.logo i { width: 26px; height: 26px; border-radius: 7px; background: var(--blue); display: grid; place-items: center; color: #FFFFFF; font: 600 0.8rem/1 var(--f); font-style: normal; }
+.nav-links { display: flex; align-items: center; gap: 28px; font-size: 0.92rem; }
+.nav-links a { color: var(--muted); text-decoration: none; font-weight: 400; }
+.nav-links a:hover { color: var(--ink); }
+.btn { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 8px; font: 500 0.95rem/1 var(--f); text-decoration: none; transition: background 0.15s; }
+.btn.primary { background: var(--blue); color: #FFFFFF; }
+.btn.primary:hover { background: var(--blue-hover); }
+.btn.ghost { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+.btn.ghost:hover { border-color: var(--chip); }
+.nav .btn { height: 38px; padding: 0 16px; font-size: 0.88rem; }
+.nav .btn.primary { color: #FFFFFF; }
 
-<section class="slide">
-<div class="eyebrow">The problem</div>
-<div class="stat">Up to 50%</div>
-<h2 style="margin-top:1.6cqw">of a hardware product's cost is parts</h2>
-<p class="sub">Small teams buy them by email: ask three suppliers, take a quote, maybe push back once.</p>
-</section>
+/* hero */
+.hero { padding-block: clamp(56px, 9vw, 112px) clamp(56px, 8vw, 96px); }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: clamp(36px, 6vw, 80px); align-items: center; }
+.hero-copy { display: grid; gap: 24px; justify-items: start; }
+.hero h1 { font-size: clamp(2.6rem, 6vw, 4.4rem); line-height: 1.02; }
+.hero h1 span { color: var(--blue); }
+.hero p.lead { font-size: clamp(1.05rem, 1.6vw, 1.22rem); color: var(--muted); max-width: 40ch; }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+.badge-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.badge { background: var(--panel); border-radius: 999px; padding: 6px 12px; font-size: 0.8rem; font-weight: 400; color: var(--ink); }
 
-<section class="slide">
-<div class="qm">“</div>
-<p class="quote">Bill of Materials sind bis zu 50% der Produktkosten … Den Überblick zu behalten und das Beste rauszuholen ist prädestiniert für eine gute KI-Lösung.</p>
-<p class="who">Clemens Saur, NeuroControls (Munich)</p>
-<p class="en">BOMs are up to 50% of product cost … predestined for a good AI solution.</p>
-<div class="foot">Cold LinkedIn message, no prior connection. He replied in 6 minutes.</div>
-</section>
+.deal { background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 1px 2px rgba(38,37,54,.04), 0 18px 40px -18px rgba(0,51,173,.18); padding: clamp(20px, 3vw, 28px); display: grid; gap: 18px; }
+.deal-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.deal-head h3 { font-size: 1rem; font-weight: 500; }
+.deal-head .badge { font-size: 0.74rem; }
+.deal .order { font-size: 0.88rem; color: var(--muted); margin-top: -12px; }
+.quotes { display: grid; gap: 8px; }
+.q { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; border: 1px solid var(--line); border-radius: 8px; padding: 9px 14px; font-size: 0.98rem; color: var(--muted); }
+.q b { font-weight: 400; color: var(--ink); font-variant-numeric: tabular-nums; }
+.q.win { border-color: var(--chip); background: #F6F6FD; }
+.q.out b { color: var(--faint); text-decoration: line-through; }
+.result { background: var(--panel); border-radius: 12px; padding: 18px 20px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 18px; align-items: center; }
+.price { grid-row: span 2; font-size: clamp(3rem, 6vw, 4rem); line-height: 1; letter-spacing: -0.04em; color: var(--blue); font-variant-numeric: tabular-nums; }
+.result p { font-size: 0.9rem; color: var(--muted); }
+.result .chip { justify-self: start; background: var(--chip); border-radius: 999px; padding: 5px 11px; font-size: 0.78rem; color: var(--ink); font-weight: 400; }
 
-<section class="slide">
-<div class="eyebrow">How it works</div>
-<h2>Three steps</h2>
-<div class="cards">
-<div class="card"><div class="n">1</div><h3>Hire it like a colleague</h3><p>Item, quantity, your limit, your deadline. Your limit stays secret.</p></div>
-<div class="card"><div class="n">2</div><h3>It haggles like a pro buyer</h3><p>Opens low, gives ground slowly, quotes rivals’ offers, drops the expensive ones, then a final “beat the best price” round.</p></div>
-<div class="card"><div class="n">3</div><h3>Ten checks before any deal</h3><p>Price, quantity, delivery, must-haves, signed confirmation.</p></div>
-</div>
-</section>
+/* proof band */
+.band { background: var(--card); border-block: 1px solid var(--line); padding-block: 28px; }
+.band .wrap { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.kpi { display: grid; gap: 2px; }
+.kpi b { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 300; letter-spacing: -0.03em; color: var(--blue); font-variant-numeric: tabular-nums; line-height: 1.15; }
+.kpi span { font-size: 0.86rem; color: var(--muted); }
 
-<section class="slide">
-<div class="tag">Simulated suppliers</div>
-<div class="eyebrow">One real run</div>
-<h2>2,000 stainless steel mounting brackets</h2>
-<div class="run">
-<div class="offers">
-<div class="offer"><span>Supplier A</span><span>€4.88</span></div>
-<div class="offer"><span>Supplier B</span><span>€5.09</span></div>
-<div class="offer"><span>Supplier C</span><span>€5.49</span></div>
-</div>
-<div class="arrow">→</div>
-<div class="final"><div class="stat">€4.31</div><p>€1,140 saved vs the best opening offer</p>
-<div class="pills"><span class="pill">10/10 checks passed</span></div></div>
-</div>
-<div class="foot">Prices come from your own quotes and from suppliers competing. Next: public market prices for every part.</div>
-</section>
+/* sections */
+.sec { padding-block: clamp(72px, 10vw, 128px); }
+.sec-head { display: grid; gap: 14px; max-width: 640px; margin-bottom: clamp(32px, 5vw, 52px); }
+.sec-head h2 { font-size: clamp(2rem, 4.2vw, 3rem); line-height: 1.08; }
+.sec-head p { color: var(--muted); font-size: 1.08rem; }
 
-<section class="slide">
-<div class="eyebrow">Trust</div>
-<h1>No valid deal,<br>no fee.</h1>
-<div class="pf"><div class="ok"><b>✓ Good deal</b>All checks pass. We record the result on Cardano and can collect the fee.</div><div class="no"><b>✗ Bad deal</b>A supplier's total doesn't add up. No deal, nothing recorded, nothing collected.</div></div>
-<div class="mark"><span>Built on</span><img src="cardano-horizontal-blue.svg" alt="Cardano"><span>· Paid via Masumi</span></div>
-</section>
+.problem .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 80px); align-items: center; }
+.stat-block { display: grid; gap: 12px; }
+.stat { font-size: clamp(4rem, 10vw, 7rem); line-height: 0.95; letter-spacing: -0.045em; color: var(--blue); }
+.stat-block h2 { font-size: clamp(1.5rem, 2.8vw, 2.1rem); line-height: 1.2; }
+.stat-block p { color: var(--muted); max-width: 42ch; }
+.quote { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: clamp(24px, 3.5vw, 36px); display: grid; gap: 16px; }
+.quote .mark { font: 600 3rem/0.5 Georgia, serif; color: var(--blue); height: 20px; }
+.quote blockquote { margin: 0; font-size: clamp(1.15rem, 1.9vw, 1.4rem); line-height: 1.4; }
+.quote .tr { font-size: 0.9rem; color: var(--faint); }
+.quote figcaption { display: grid; gap: 2px; padding-top: 6px; border-top: 1px solid var(--line); }
+.quote figcaption b { font-weight: 500; font-size: 0.95rem; }
+.quote figcaption span { font-size: 0.84rem; color: var(--faint); }
 
-<section class="slide">
-<div class="eyebrow">Booth proof</div>
-<h2>Paid on Cardano Preprod, start to finish</h2>
-<div class="tx">
-<a class="row" href="https://preprod.cardanoscan.io/transaction/9ae47b91ac40499c864276bf6074f5fdfff1baa9ba613377d0757a725571f6a9"><span>07:53:23 · Fee locked <small>block 5356156</small></span><code>9ae47b91…</code></a>
-<a class="row" href="https://preprod.cardanoscan.io/transaction/304720bcd352d81cc4360fc71eca66e834f5ffce5d21940205f133606381a221"><span>07:54:03 · Result recorded, 40 s later <small>block 5356157</small></span><code>304720bc…</code></a>
-<a class="row" href="https://preprod.cardanoscan.io/transaction/c2d59bd393167e5e47b560bfdb81b1ebeae2041e41e124f5246dac065a20aef0"><span>08:37:53 · Payment collected, after the unlock time</span><code>c2d59bd3…</code></a>
-</div>
-</section>
+.how { background: var(--card); border-block: 1px solid var(--line); }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.steps li { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 26px 24px 30px; display: grid; gap: 10px; align-content: start; }
+.steps .n { width: 36px; height: 36px; border-radius: 50%; background: var(--panel); color: var(--blue); display: grid; place-items: center; font-weight: 500; font-size: 0.95rem; margin-bottom: 6px; }
+.steps p { color: var(--muted); font-size: 0.95rem; }
 
-<section class="slide">
-<div class="eyebrow">Where prices come from</div>
-<h2>Price data that exists, and what it costs</h2>
-<div class="src">
-<div><b>Your own quotes</b><span>What each supplier offers you today</span><i>Free · used now</i></div>
-<div><b>Suppliers competing</b><span>Each offer is leverage on the next</span><i>Free · used now</i></div>
-<div><b>Distributor APIs (Octopart/Nexar, DigiKey, Mouser)</b><span>Public list price per part, per quantity</span><i>Nexar: free for 100 parts · next</i></div>
-<div><b>Enterprise cost data (S&amp;P Global, Beroe)</b><span>What a part should cost</span><i>Quote-based · later</i></div>
-</div>
-<p class="sub" style="font-size:2.4cqw">None of them sells the price a supplier will actually accept. Only negotiating finds that.</p>
-</section>
+.trust .wrap { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(32px, 6vw, 80px); align-items: start; }
+.trust h2 { font-size: clamp(2.6rem, 5.4vw, 4rem); line-height: 1.02; }
+.trust .left { display: grid; gap: 18px; }
+.trust .left p { color: var(--muted); max-width: 38ch; }
+.outcomes { display: grid; gap: 14px; }
+.outcome { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 4px 14px; }
+.outcome .ic { grid-row: span 2; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 600; background: var(--panel); color: var(--blue); }
+.outcome.bad .ic { background: #FBEAE9; color: var(--bad); }
+.outcome h3 { font-weight: 500; font-size: 1.02rem; }
+.outcome p { color: var(--muted); font-size: 0.93rem; }
+.chain { background: var(--panel); border-radius: 12px; padding: 18px 22px; display: grid; gap: 10px; }
+.chain .steps-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; font-size: 0.9rem; }
+.chain .steps-row a { background: var(--card); border-radius: 999px; padding: 6px 12px; text-decoration: none; font-weight: 400; }
+.chain .steps-row a:hover { text-decoration: underline; }
+.chain .sep { color: var(--faint); }
+.chain small { font-size: 0.8rem; color: var(--muted); }
 
-<section class="slide">
-<div class="eyebrow">Next</div>
-<h2>What comes next</h2>
-<div class="next">
-<div><b>1</b>Real suppliers by email</div>
-<div><b>2</b>Market prices for every part: one data subscription, shared by every customer where the licence allows</div>
-<div><b>3</b>A share of what we save you</div>
-</div>
-<p class="sub" style="font-size:2.6cqw;margin-top:3cqw">It negotiates, and proves its work before it collects a fee.</p>
-<div class="foot">Tanmay · Adrian · Saket</div>
-</section>
+.roadmap { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--line); }
+.roadmap li { padding: 22px 24px 0 0; display: grid; gap: 8px; align-content: start; position: relative; }
+.roadmap li::before { content: ""; position: absolute; top: -5px; left: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--blue); }
+.roadmap .when { font: 600 0.7rem/1.3 var(--f); letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+.roadmap h3 { font-size: 1.12rem; }
 
-<div id="ctr"></div>
-<script>
-const S=[...document.querySelectorAll('.slide')];let i=0;
-const go=n=>{i=Math.max(0,Math.min(S.length-1,n));S.forEach((s,k)=>s.classList.toggle('on',k===i));
- document.getElementById('ctr').textContent=(i+1)+' / '+S.length;history.replaceState(null,'','#'+(i+1))};
-addEventListener('keydown',e=>{if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){e.preventDefault();go(i+1)}
- if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();go(i-1)}});
-addEventListener('click',e=>{if(!e.target.closest('a'))go(i+1)});
-go((parseInt(location.hash.slice(1))||1)-1);
-</script></body></html>
+.cta { padding-bottom: clamp(72px, 10vw, 120px); }
+.cta-box { background: var(--panel); border-radius: 20px; padding: clamp(32px, 6vw, 64px); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: center; }
+.cta-box h2 { font-size: clamp(1.8rem, 3.6vw, 2.6rem); line-height: 1.1; }
+.cta-box p { color: var(--muted); margin-top: 10px; }
+
+footer { border-top: 1px solid var(--line); padding-block: 28px 44px; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 28px; font-size: 0.86rem; color: var(--faint); }
+footer .links { display: flex; flex-wrap: wrap; gap: 6px 22px; }
+footer b { color: var(--blue); font-weight: 600; letter-spacing: 0.06em; }
+
+@media (max-width: 900px) {
+  .hero .wrap, .problem .wrap, .trust .wrap, .cta-box { grid-template-columns: minmax(0, 1fr); }
+  .band .wrap { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steps, .roadmap { grid-template-columns: minmax(0, 1fr); }
+  .roadmap { border-top: 0; border-left: 1px solid var(--line); margin-left: 4px; }
+  .roadmap li { padding: 0 0 24px 22px; }
+  .roadmap li::before { top: 6px; left: -5px; }
+  .nav-links a.hide-sm { display: none; }
+}
+@media (max-width: 480px) {
+  .nav-links { gap: 14px; }
+  .result { grid-template-columns: minmax(0, 1fr); }
+  .price { grid-row: auto; }
+}
+</style>
+</head>
+<body>
+<header class="nav gutter">
+  <div class="wrap">
+    <a class="logo" href="#top"><i aria-hidden="true">B</i>Bargain Bot</a>
+    <nav class="nav-links" aria-label="Main">
+      <a class="hide-sm" href="#how">How it works</a>
+      <a class="hide-sm" href="#trust">Trust</a>
+      <a class="hide-sm" href="#next">Roadmap</a>
+      <a class="btn primary" href="https://github.com/narangtanmay/bargain-bot">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero gutter">
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="eyebrow">AI procurement agent · Cardano / Masumi</span>
+        <h1>Gets your suppliers bidding. <span>Only gets paid when the deal holds up.</span></h1>
+        <p class="lead">Hand Bargain Bot a parts order and your price limit. It plays suppliers against each other, then checks the deal ten ways before a single cent of its fee moves.</p>
+        <div class="ctas">
+          <a class="btn primary" href="#how">See how it works</a>
+          <a class="btn ghost" href="#trust">On-chain proof</a>
+        </div>
+        <div class="badge-row"><span class="badge">Built on Cardano</span><span class="badge">Paid via Masumi</span><span class="badge">Hire it on Sokosumi</span></div>
+      </div>
+
+      <div class="deal" aria-label="Example deal">
+        <div class="deal-head"><h3>Order: 2,000 stainless steel brackets</h3><span class="badge">Simulated suppliers</span></div>
+        <p class="order">Your limit €4.80 per unit · delivery in 21 days · net 30</p>
+        <div class="quotes">
+          <div class="q win"><span>Supplier A</span><b>€4.88</b></div>
+          <div class="q"><span>Supplier B</span><b>€5.09</b></div>
+          <div class="q out"><span>Supplier C</span><b>€5.49</b></div>
+        </div>
+        <div class="result">
+          <div class="price">€4.31</div>
+          <p>€1,140 saved vs the best opening offer</p>
+          <span class="chip">10/10 checks passed</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="band gutter">
+    <div class="wrap">
+      <div class="kpi"><b>€1,140</b><span>saved on one order</span></div>
+      <div class="kpi"><b>10 / 10</b><span>checks before any deal</span></div>
+      <div class="kpi"><b>100 / 100</b><span>deals vs independent seller bots</span></div>
+      <div class="kpi"><b>3 tx</b><span>on Cardano: locked, recorded, paid</span></div>
+    </div>
+  </div>
+
+  <section class="sec problem gutter">
+    <div class="wrap">
+      <div class="stat-block">
+        <span class="eyebrow">The problem</span>
+        <div class="stat">Up to 50%</div>
+        <h2>of a hardware product's cost is parts.</h2>
+        <p>Small teams buy them by email: ask three suppliers, take a quote, maybe push back once.</p>
+      </div>
+      <figure class="quote">
+        <div class="mark" aria-hidden="true">“</div>
+        <blockquote lang="de">Bill of Materials sind bis zu 50% der Produktkosten … Den Überblick zu behalten und das Beste rauszuholen ist prädestiniert für eine gute KI-Lösung.</blockquote>
+        <p class="tr">BOMs are up to 50% of product cost … predestined for a good AI solution.</p>
+        <figcaption><b>Clemens Saur, NeuroControls (Munich)</b><span>Cold LinkedIn message, no prior connection. He replied in 6 minutes.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="sec how gutter" id="how">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">How it works</span>
+        <h2>Three steps, no haggling on your side</h2>
+      </div>
+      <ol class="steps">
+        <li><span class="n">1</span><h3>Hire it like a colleague</h3><p>Item, quantity, your limit, your deadline. Your limit stays secret.</p></li>
+        <li><span class="n">2</span><h3>It haggles like a pro buyer</h3><p>Opens low, gives ground slowly, quotes rivals' offers, drops the expensive ones, then a final “beat the best price” round.</p></li>
+        <li><span class="n">3</span><h3>Ten checks before any deal</h3><p>Price, quantity, delivery, must-haves, signed confirmation.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec trust gutter" id="trust">
+    <div class="wrap">
+      <div class="left">
+        <span class="eyebrow">Trust</span>
+        <h2>No valid deal, no fee.</h2>
+        <p>The fee sits in escrow until the deal passes every check. It negotiates, and proves its work before any money moves.</p>
+      </div>
+      <div class="outcomes">
+        <div class="outcome"><span class="ic" aria-hidden="true">✓</span><h3>Good deal</h3><p>All checks pass. The result is recorded on Cardano and the fee is released.</p></div>
+        <div class="outcome bad"><span class="ic" aria-hidden="true">✗</span><h3>Bad deal</h3><p>A supplier's total doesn't add up. No deal, nothing recorded, nothing collected.</p></div>
+        <div class="chain">
+          <span class="eyebrow">Live on Cardano preprod</span>
+          <div class="steps-row">
+            <a href="https://preprod.cardanoscan.io/transaction/9ae47b91ac40499c864276bf6074f5fdfff1baa9ba613377d0757a725571f6a9">Fee locked</a><span class="sep">→</span>
+            <a href="https://preprod.cardanoscan.io/transaction/304720bcd352d81cc4360fc71eca66e834f5ffce5d21940205f133606381a221">Result recorded</a><span class="sep">→</span>
+            <a href="https://preprod.cardanoscan.io/transaction/c2d59bd393167e5e47b560bfdb81b1ebeae2041e41e124f5246dac065a20aef0">Fee released</a>
+          </div>
+          <small>The bracket order above, run as a real paid task.</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec gutter" id="next" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Roadmap</span>
+        <h2>What comes next</h2>
+      </div>
+      <ol class="roadmap">
+        <li><span class="when">Next</span><h3>Real suppliers by email</h3><p class="muted">The bot reads and answers supplier emails directly.</p></li>
+        <li><span class="when">Then</span><h3>Market prices for every part</h3><p class="muted">One data subscription, shared by every customer.</p></li>
+        <li><span class="when">Business model</span><h3>A share of what we save you</h3><p class="muted">The fee grows with the savings, not a flat rate.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="cta gutter">
+    <div class="wrap">
+      <div class="cta-box">
+        <div>
+          <h2>Let your suppliers do the bidding.</h2>
+          <p>Code and evidence are public. Built at the TUM Blockchain Hackathon 2026.</p>
+        </div>
+        <a class="btn primary" href="https://github.com/narangtanmay/bargain-bot">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="gutter">
+  <div class="wrap">
+    <span>Tanmay · Adrian · Saket &nbsp;·&nbsp; Built on <b>CARDANO</b> · Paid via Masumi</span>
+    <span class="links">
+      <a href="https://github.com/narangtanmay/bargain-bot">Source</a>
+      <a href="https://github.com/narangtanmay/bargain-bot/blob/main/EVIDENCE.md">Evidence log</a>
+    </span>
+  </div>
+</footer>
+</body>
+</html>
